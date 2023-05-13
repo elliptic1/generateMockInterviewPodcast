@@ -13,6 +13,7 @@ from data.interview_types import get_interview_type
 from data.job_titles import get_job_title
 from keys import OpenAI_API_KEY, aws_access_key_id, aws_secret_access_key
 from data.senior_job_titles import get_senior_job_title
+from music.add_metadata import add_metadata
 from music.add_music import add_intro_outro_music
 from speech_util import create_audio_files
 from util import remove_files, concatenate_audio_files
@@ -20,7 +21,7 @@ from data.voices import get_interviewee_voice
 
 remove_files()
 
-max_content_tokens = 1000  # Reserve some tokens for the other messages and instructions.
+max_content_tokens = 2000  # Reserve some tokens for the other messages and instructions.
 
 chat = ChatOpenAI(openai_api_key=OpenAI_API_KEY)
 
@@ -29,12 +30,16 @@ company = get_company()
 interviewer_title = get_senior_job_title()
 job_post_title = get_job_title()
 interviewee_voice = get_interviewee_voice()
+interviewee_old_job = get_company()
 num_questions = 3
 interviewer_voice = "Arthur"
 interview_type = get_interview_type()
 
-print(interviewer_voice + " will give a " + interview_type + " interview to " + interviewee_voice
-      + " for the job of " + job_post_title + " at " + company + ".")
+title = "Today, " + interviewer_voice + " will act as " + interviewer_title + ", and give a " + interview_type \
+        + " interview to " + interviewee_voice + " for the job of " + job_post_title + " at " + company \
+        + ". " + interviewee_voice + " currently works at " + interviewee_old_job + "."
+
+print(title)
 
 # Commented out IPython magic to ensure Python compatibility.
 response_schemas = [
@@ -49,12 +54,12 @@ response_schemas = [
 output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 
 system_template_shared = f"""
-This is a podcast where we give mock interviews to guests.
-This particular interview will be of the type {interview_type}.
-You are {interviewer_voice}, the podcast host and will act as a {interviewer_title} from {company}, 
-and you conducting a {interview_type} interview of {interviewee_voice} for the job of {job_post_title}.
+This is a podcast called "Tech Star Podcast" where we give mock interviews to guests.
+You are {interviewer_voice}, the podcast host, and will also act as a {interviewer_title} from {company}. 
+You are conducting a {interview_type} interview of {interviewee_voice} for the job of {job_post_title}.
+{interviewee_voice} currently works at {interviewee_old_job}.
 Research the company {company}, its business practices, ideology, and its technologies, and use that
-context to inform your questions.
+context to inform your dialog.
 """
 
 system_template = f"""
@@ -116,7 +121,11 @@ system_template = f"""
 Ask {interview_type} interview questions related to the job of {job_post_title}, 
 from the point of view of a {interviewer_title} from {company}.
 Generate {num_questions} questions and answers in valid JSON.
-For each answer, generate a response from {interviewer_voice}.
+For each question, preface it by an introduction of the question so {interviewee_voice} has the full context.
+Generate a thorough and detailed answer from {interviewee_voice} for each question using the STAR method.
+The STAR method is a technique you can use to answer interview questions. 
+STAR stands for situation, task, action and result.
+For each answer, generate a thoughtful response from {interviewer_voice}.
 There should be no markdown, no formatting, no newlines, no quotation marks, and no tabs in your response.
 All output should be valid parsable JSON.
 """
@@ -151,17 +160,10 @@ try:
 except OutputParserException:
     response_json = {}
 
-# Create a client using the credentials and region defined in your AWS configuration
-polly_client = boto3.Session(
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key,
-    region_name='us-east-1'
-).client('polly')
-
 # Create the audio files
 print("creating audio files")
 filenames = create_audio_files(response_json, interviewee_voice, num_questions,
-                               intro_outro_response_json, interviewer_voice, polly_client)
+                               intro_outro_response_json, interviewer_voice)
 
 # Concatenate the audio files
 print("concatenating audio files")
@@ -169,3 +171,6 @@ concatenate_audio_files(filenames)
 
 # Add intro and outro music
 add_intro_outro_music()
+
+# Add metadata
+add_metadata(title)
