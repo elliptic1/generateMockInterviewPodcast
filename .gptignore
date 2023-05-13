@@ -1,0 +1,4 @@
+.gptignore
+requirements.txt
+data/
+.idea/

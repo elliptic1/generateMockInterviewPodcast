@@ -28,7 +28,7 @@ interviewer_title = get_senior_job_title()
 job_post_title = get_job_title()
 interviewee_voice = get_interviewee_voice()
 user_input = ""
-num_questions = 2
+num_questions = 10
 interviewer_voice = "Arthur"
 
 # Commented out IPython magic to ensure Python compatibility.
