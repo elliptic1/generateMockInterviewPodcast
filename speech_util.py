@@ -26,6 +26,7 @@ def create_audio_files(response_json, interviewee_voice, num_questions,
     for i in range(1, num_questions):
         question_key = 'Question' + str(i)
         answer_key = 'Answer' + str(i)
+        response_key = 'Response' + str(i)
 
         print("Working on question " + str(i) + "...")
 
@@ -35,6 +36,10 @@ def create_audio_files(response_json, interviewee_voice, num_questions,
 
         filename = synthesize_speech(response_json[answer_key], interviewee_voice,
                                      f'output/temp/answer{i}.mp3', polly_client)
+        q_filenames.append(filename)
+
+        filename = synthesize_speech(response_json[response_key], interviewer_voice,
+                                     f'output/temp/response{i}.mp3', polly_client)
         q_filenames.append(filename)
 
     # Synthesize the outro

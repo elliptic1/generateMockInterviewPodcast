@@ -100,10 +100,13 @@ except OutputParserException:
 response_schemas = [
     ResponseSchema(name="Question1", description="This is question 1"),
     ResponseSchema(name="Answer1", description="This is answer 1"),
+    ResponseSchema(name="Response1", description="This is response 1"),
     ResponseSchema(name="Question2", description="This is question 2"),
     ResponseSchema(name="Answer2", description="This is answer 2"),
+    ResponseSchema(name="Response2", description="This is response 2"),
     ResponseSchema(name="Question3", description="This is question 3"),
     ResponseSchema(name="Answer3", description="This is answer 3"),
+    ResponseSchema(name="Response3", description="This is response 3"),
 ]
 
 # How you would like to parse your output
@@ -113,6 +116,7 @@ system_template = f"""
 Ask {interview_type} interview questions related to the job of {job_post_title}, 
 from the point of view of a {interviewer_title} from {company}.
 Generate {num_questions} questions and answers in valid JSON.
+For each answer, generate a response from {interviewer_voice}.
 There should be no markdown, no formatting, no newlines, no quotation marks, and no tabs in your response.
 All output should be valid parsable JSON.
 """
