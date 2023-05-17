@@ -81,7 +81,7 @@ human_template = """
 
 {format_instructions}
 
-YOUR RESPONSE:
+YOUR VALID JSON CODE RESPONSE:
 """
 
 human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
@@ -97,15 +97,20 @@ _input = chat_prompt.format_prompt(
     job_post_title=job_post_title,
 )
 
-print("Asking for intro and outro...")
-output = chat(_input.to_messages())
+got_intro = False
+intro_outro_response_json = {}
 
-try:
-    intro_outro_response_json = output_parser.parse(output.content)
-except OutputParserException:
-    intro_outro_response_json = {}
+while not got_intro:
 
-# Commented out IPython magic to ensure Python compatibility.
+    print("Asking for intro and outro...")
+    output = chat(_input.to_messages())
+
+    try:
+        intro_outro_response_json = output_parser.parse(output.content)
+        got_intro = True
+    except OutputParserException:
+        intro_outro_response_json = {}
+
 response_schemas = [
     ResponseSchema(name="Question1", description="This is question 1"),
     ResponseSchema(name="Answer1", description="This is answer 1"),
@@ -127,6 +132,8 @@ Ask {interview_type} interview questions related to the job of {job_post_title} 
 from the point of view of a {interviewer_title} from {company}.
 For each question, preface it by an introduction of the question so {interviewee_voice} has the full context.
 The question should be written in a normal speaking style and sound like a real person.
+All output should be valid parsable JSON.
+
 Answer Instructions:
 Generate a thorough and detailed answer from {interviewee_voice} for each question using the STAR method.
 The answer should be based on {interviewee_voice}'s experience at {interviewee_old_company} as a {interviewee_old_job}.
@@ -134,11 +141,15 @@ The STAR method is a technique you can use to answer interview questions.
 STAR stands for situation, task, action and result.
 Do not mention the STAR method or "situation", "task", "action", "result" in your answer.
 The answer should be written in a normal speaking style and sound like a real person.
+All output should be valid parsable JSON.
+
 Answer Response Instructions:
 For each answer, generate a thoughtful response from {interviewer_voice}.
 The response should not contain a question.
 The response should be one sentence long and should be a statement, not a question.
 The response should be written in a normal speaking style and sound like a real person.
+All output should be valid parsable JSON.
+
 General Instructions:
 There should be no markdown, no formatting, no newlines, no quotation marks, and no tabs in your output.
 Generate {num_questions} questions and answers and responses.
@@ -151,7 +162,7 @@ human_template = """
 
 {format_instructions}
 
-YOUR JSON CODE RESPONSE:
+YOUR VALID JSON CODE RESPONSE:
 """
 
 human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
@@ -174,14 +185,19 @@ filenames += create_intro_audio_files(intro_outro_response_json, interviewee_voi
 while (len(filenames) - 5) / 3 < total_num_questions:
     batch = batch + 1
 
-    print(f"sending input for batch {batch} to chat")
-    output = chat(_input.to_messages())
-    print("got output from chat")
+    got_json = False
 
-    try:
-        response_json = output_parser.parse(output.content)
-    except OutputParserException:
-        response_json = {}
+    response_json = {}
+    while not got_json:
+        print(f"sending input for batch {batch} to chat")
+        output = chat(_input.to_messages())
+        print("got output from chat")
+
+        try:
+            response_json = output_parser.parse(output.content)
+            got_json = True
+        except OutputParserException:
+            response_json = {}
 
     # Create the audio files
     print(f"creating audio files for batch {batch}")
