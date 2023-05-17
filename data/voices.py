@@ -4,14 +4,14 @@ neural_voices = [
 
     "Olivia",
     "Aria",
-    "Ayanda",
+    "Ayanda",  # South African
     "Ruth",
     "Stephen",
     "Hala",
     "Zhiyu",
     "Laura",
     "Joey",
-    "Amy",
+    "Amy",  # English
 
     # "Hiujin",
     # "Emma",
