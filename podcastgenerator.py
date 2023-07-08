@@ -59,7 +59,7 @@ output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 
 system_template_shared = f"""
 This is a podcast called "Tech Star Podcast" where we give mock interviews to guests.
-You are {interviewer_voice_name}, the podcast host, and will also act as a {interviewer_title} from {company}. 
+You are {interviewer_voice_name}, the podcast host, and you will also act as a {interviewer_title} from {company}. 
 You are conducting a {interview_type} interview of {interviewee_voice_name} for the job of {job_post_title}.
 {interviewee_voice_name} currently works at {interviewee_old_company} as a {interviewee_old_job}.
 Research the company {company}, its business practices, ideology, and its technologies, and use that
