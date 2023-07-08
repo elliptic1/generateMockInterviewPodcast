@@ -1,56 +1,10 @@
 import random
-
-neural_voices = [
-
-    "Olivia",
-    "Aria",
-    "Ayanda",  # South African
-    "Ruth",
-    "Stephen",
-    "Hala",
-    "Zhiyu",
-    "Laura",
-    "Joey",
-    "Amy",  # English
-
-    # "Hiujin",
-    # "Emma",
-    # "Brian",
-    # "Ivy",
-    # "Joanna",
-    # "Kendra",
-    # "Kimberly",
-    # "Salli",
-    # "Matthew",
-    # "Suvi",
-    # "Lea",
-    # "Remi",
-    # "Gabrielle",
-    # "Liam",
-    # "Vicki",
-    # "Daniel",
-    # "Hannah",
-    # "Bianca",
-    # "Adriano",
-    # "Takumi",
-    # "Kazuha",
-    # "Ida",
-    # "Ola",
-    # "Camila",
-    # "Vitoria",
-    # "Thiago",
-    # "Ines",
-    # "Lucia",
-    # "Sergio",
-    # "Mia",
-    # "Andres",
-    # "Lupe",
-    # "Penelope",
-    # "Miguel",
-    # "Pedro",
-    # "Elin"
-]
+from data.get_voices import get_voice_list
 
 
-def get_interviewee_voice():
-    return random.choice(neural_voices)
+def get_interview_voices():
+    voice_list = get_voice_list()
+    random_name = random.choice(voice_list)
+    while random_name == "Arthur":
+        random_name = random.choice(voice_list)
+    return random_name, "Arthur"
